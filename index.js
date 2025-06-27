@@ -1,8 +1,13 @@
 const express = require('express')
 require('dotenv').config()
 const app = express()
+const jwt = require('jsonwebtoken')
 const cors = require('cors')
 const port = process.env.PORT || 5000
+const { MongoClient, ObjectId } = require('mongodb')
+const { ServerApiVersion } = require('mongodb')
+
+
 
 // middleware
 app.use(cors())
@@ -29,6 +34,31 @@ async function run () {
     const userCollection = client.db('hashi').collection('users')
     const appointmentCollection = client.db('hashi').collection('appointment')
     const reviewsCollection = client.db('hashi').collection('reviews')
+
+        // Jwt related api
+    app.post('/jwt', async (req, res) => {
+      const user = req.body
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: '1hr'
+      })
+      res.send({ token })
+    })
+
+    // middleware
+    const verifyToken = (req, res, next) => {
+      // console.log('inside token', req.headers.authorization)
+      if (!req.headers.authorization) {
+        return res.status(401).send({ message: 'forbidded access' })
+      }
+      const token = req.headers.authorization.split(' ')[1]
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+          return res.status(401).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded
+        next()
+      })
+    }
 
     app.get('/doctors', async (req, res) => {
       const result = await doctorsCollection.find().toArray()
