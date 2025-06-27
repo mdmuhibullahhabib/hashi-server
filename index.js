@@ -27,12 +27,14 @@ async function run () {
 
     const doctorsCollection = client.db('hashi').collection('doctors')
     const userCollection = client.db('hashi').collection('users')
+    const appointmentCollection = client.db('hashi').collection('appointment')
 
     app.get('/doctors', async (req, res) => {
       const result = await doctorsCollection.find().toArray()
       res.send(result)
     })
 
+    // user related apis
     app.post('/users', async (req, res) => {
       const user = req.body
       const query = { email: user.email }
@@ -44,8 +46,77 @@ async function run () {
       res.send(result)
     })
 
+        // appointment related api
+    app.post('/appointment', async (req, res) => {
+      const booked = req.body
+      const result = await appointmentCollection.insertOne(booked)
+      res.send(result)
+    })
+
+    // app.get('/assigned-tours/:name', async (req, res) => {
+    //   const name = req.params.name
+    //   const result = await appointmentCollection
+    //     .find({ tourGuideName: name })
+    //     .toArray()
+    //   res.send(result)
+    // })
+
+    app.get('/appointment', async (req, res) => {
+      const email = req.query.email
+      const query = { email: email }
+      const result = await appointmentCollection.find(query).toArray()
+      res.send(result)
+    })
+
+    app.patch('/appointment/:id', async (req, res) => {
+      const id = req.params.id
+      const result = await appointmentCollection.updateOne(
+        { _id: new ObjectId(id), status: 'pending' },
+        { $set: { status: 'in-review' } }
+      )
+      res.send(result)
+    })
+
+    app.delete('/appointment/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await appointmentCollection.deleteOne(query)
+      res.send(result)
+    })
 
 
+   // reviews related api
+    app.post('/reviews', async (req, res) => {
+      const story = req.body
+      const result = await reviewsCollection.insertOne(story)
+      res.send(result)
+    })
+
+    app.get('/reviews', async (req, res) => {
+      const result = await reviewsCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.get('/reviews', async (req, res) => {
+      const email = req.query.email
+      const query = { email: email }
+      const result = await reviewsCollection.find(query).toArray()
+      res.send(result)
+    })
+
+    app.get('/reviews-random', async (req, res) => {
+      const result = await reviewsCollection
+        .aggregate([{ $sample: { size: 4 } }])
+        .toArray()
+      res.send(result)
+    })
+
+    app.delete('/review/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await reviewsCollection.deleteOne(query)
+      res.send(result)
+    })
 
 
 
