@@ -28,6 +28,7 @@ async function run () {
     const doctorsCollection = client.db('hashi').collection('doctors')
     const userCollection = client.db('hashi').collection('users')
     const appointmentCollection = client.db('hashi').collection('appointment')
+    const reviewsCollection = client.db('hashi').collection('reviews')
 
     app.get('/doctors', async (req, res) => {
       const result = await doctorsCollection.find().toArray()
