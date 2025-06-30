@@ -159,14 +159,6 @@ async function run () {
       res.send(result)
     })
 
-    // app.get('/assigned-tours/:name', async (req, res) => {
-    //   const name = req.params.name
-    //   const result = await appointmentCollection
-    //     .find({ tourGuideName: name })
-    //     .toArray()
-    //   res.send(result)
-    // })
-
     app.get('/appointment', async (req, res) => {
       const email = req.query.email
       const query = { email: email }
