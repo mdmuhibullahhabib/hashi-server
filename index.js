@@ -68,6 +68,7 @@ async function run () {
       const result = await userCollection.find().toArray()
       res.send(result)
     })
+
     app.post('/users', async (req, res) => {
       const user = req.body
       const query = { email: user.email }
@@ -124,10 +125,6 @@ async function run () {
       }
     )
 
-    app.get('/users/guides', async (req, res) => {
-      const guides = await userCollection.find({ role: 'guide' }).toArray()
-      res.send(guides)
-    })
 
     app.get('/user', async (req, res) => {
       const email = req.query.email
@@ -196,18 +193,12 @@ async function run () {
 
    // reviews related api
 
-   // POST route to add review
 app.post("/reviews", async (req, res) => {
     const { review, date } = req.body;
     const result = await reviewsCollection.insertOne({ review, date });
     res.send(result); 
 });
 
-    // app.post('/reviews', async (req, res) => {
-    //   const story = req.body
-    //   const result = await reviewsCollection.insertOne(story)
-    //   res.send(result)
-    // })
 
     app.get('/reviews', async (req, res) => {
       const result = await reviewsCollection.find().toArray()
