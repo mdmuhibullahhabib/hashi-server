@@ -163,8 +163,12 @@ async function run () {
 
     // appointment related api
     app.post('/appointment', async (req, res) => {
-      const booked = req.body
-      const result = await appointmentCollection.insertOne(booked)
+      const result = await appointmentCollection.find().toArray()
+      res.send(result)
+    })
+
+     app.get('/appointment', async (req, res) => {
+      const result = await appointmentCollection.find().toArray()
       res.send(result)
     })
 
