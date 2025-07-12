@@ -6,8 +6,6 @@ const cors = require('cors')
 const port = process.env.PORT || 5000
 const { ObjectId } = require('mongodb')
 
-
-
 // middleware
 app.use(cors())
 app.use(express.json())
@@ -34,37 +32,52 @@ async function run () {
     const appointmentCollection = client.db('hashi').collection('appointment')
     const reviewsCollection = client.db('hashi').collection('reviews')
 
-      // jwt related api
+    // jwt related api
     app.post('/jwt', async (req, res) => {
-      const user = req.body;
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
-      res.send({ token });
+      const user = req.body
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: '1h'
+      })
+      res.send({ token })
     })
 
-    // middlewares 
+    // middlewares
     const verifyToken = (req, res, next) => {
-      console.log('inside verify token', req.headers.authorization);
+      console.log('inside verify token', req.headers.authorization)
       if (!req.headers.authorization) {
-        return res.status(401).send({ message: 'unauthorized access' });
+        return res.status(401).send({ message: 'unauthorized access' })
       }
-      const token = req.headers.authorization.split(' ')[1];
+      const token = req.headers.authorization.split(' ')[1]
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
           return res.status(401).send({ message: 'unauthorized access' })
         }
-        req.decoded = decoded;
-        next();
+        req.decoded = decoded
+        next()
       })
     }
 
+    // doctor related api
+        app.post('/doctors', async (req, res) => {
+      const booked = req.body
+      const result = await doctorsCollection.insertOne(booked)
+      res.send(result)
+    })
 
     app.get('/doctors', async (req, res) => {
       const result = await doctorsCollection.find().toArray()
       res.send(result)
     })
 
+    app.delete('/doctors/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await doctorsCollection.deleteOne(query)
+      res.send(result)
+    })
+
     // user related apis
-        app.get('/users', async (req, res) => {
+    app.get('/users', async (req, res) => {
       const result = await userCollection.find().toArray()
       res.send(result)
     })
@@ -80,7 +93,7 @@ async function run () {
       res.send(result)
     })
 
-  app.get('/users/role/:email', verifyToken, async (req, res) => {
+    app.get('/users/role/:email', verifyToken, async (req, res) => {
       const email = req.params.email
       if (email !== req.decoded.email) {
         return res.status(403).send({ message: 'Unauthorized access' })
@@ -125,7 +138,6 @@ async function run () {
       }
     )
 
-
     app.get('/user', async (req, res) => {
       const email = req.query.email
       const result = await userCollection.findOne({ email })
@@ -142,17 +154,14 @@ async function run () {
       res.send(result)
     })
 
-    app.delete('/users/:id',  async (req, res) => {
+    app.delete('/users/:id', async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await userCollection.deleteOne(query)
       res.send(result)
     })
 
-
-
-
-        // appointment related api
+    // appointment related api
     app.post('/appointment', async (req, res) => {
       const booked = req.body
       const result = await appointmentCollection.insertOne(booked)
@@ -182,15 +191,13 @@ async function run () {
       res.send(result)
     })
 
+    // reviews related api
 
-   // reviews related api
-
-app.post("/reviews", async (req, res) => {
-    const { review, date } = req.body;
-    const result = await reviewsCollection.insertOne({ review, date });
-    res.send(result); 
-});
-
+    app.post('/reviews', async (req, res) => {
+      const { review, date } = req.body
+      const result = await reviewsCollection.insertOne({ review, date })
+      res.send(result)
+    })
 
     app.get('/reviews', async (req, res) => {
       const result = await reviewsCollection.find().toArray()
@@ -217,8 +224,6 @@ app.post("/reviews", async (req, res) => {
       const result = await reviewsCollection.deleteOne(query)
       res.send(result)
     })
-
-
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
