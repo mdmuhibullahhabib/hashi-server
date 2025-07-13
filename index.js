@@ -58,7 +58,7 @@ async function run () {
     }
 
     // doctor related api
-        app.post('/doctors', async (req, res) => {
+    app.post('/doctors', async (req, res) => {
       const booked = req.body
       const result = await doctorsCollection.insertOne(booked)
       res.send(result)
@@ -166,8 +166,13 @@ async function run () {
       const result = await appointmentCollection.find().toArray()
       res.send(result)
     })
+    app.post('/doctors', async (req, res) => {
+      const booked = req.body
+      const result = await doctorsCollection.insertOne(booked)
+      res.send(result)
+    })
 
-     app.get('/appointment', async (req, res) => {
+    app.get('/appointment', async (req, res) => {
       const result = await appointmentCollection.find().toArray()
       res.send(result)
     })
