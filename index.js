@@ -199,8 +199,8 @@ async function run () {
     // reviews related api
 
     app.post('/reviews', async (req, res) => {
-      const { review, date } = req.body
-      const result = await reviewsCollection.insertOne({ review, date })
+      const { review, name, date } = req.body
+      const result = await reviewsCollection.insertOne({ review, name, date })
       res.send(result)
     })
 
@@ -218,7 +218,7 @@ async function run () {
 
     app.get('/reviews-random', async (req, res) => {
       const result = await reviewsCollection
-        .aggregate([{ $sample: { size: 4 } }])
+        .aggregate([{ $sample: { size: 2 } }])
         .toArray()
       res.send(result)
     })
