@@ -125,6 +125,7 @@ async function run () {
     app.patch(
       '/users/guide/:id',
       // verifyToken,
+      // verifyToken,
       // verifyAdmin,
       async (req, res) => {
         const id = req.params.id
