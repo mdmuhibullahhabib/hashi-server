@@ -124,7 +124,6 @@ async function run () {
 
     app.patch(
       '/users/guide/:id',
-      // ver
       // verifyToken,
       // verifyAdmin,
       async (req, res) => {
